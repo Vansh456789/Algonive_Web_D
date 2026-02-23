@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CollabTask - Team Task Management</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Auth Screen -->
+    <div id="authScreen" class="screen">
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-logo">
+                    <h1>CollabTask</h1>
+                    <p>Team collaboration simplified</p>
+                </div>
+
+                <!-- Login Form -->
+                <form id="loginForm" class="auth-form" style="display: block;">
+                    <h2>Welcome Back</h2>
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input type="email" id="loginEmail" placeholder="your@email.com" required>
+                        <small class="error-message" id="loginEmailError"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" placeholder="••••••••" required>
+                        <small class="error-message" id="loginPasswordError"></small>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Sign In</button>
+                    <p class="auth-toggle">
+                        Don't have an account? 
+                        <a href="#" onclick="toggleAuthForm(); return false;">Sign up</a>
+                    </p>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="signupForm" class="auth-form" style="display: none;">
+                    <h2>Create Account</h2>
+                    <div class="form-group">
+                        <label for="signupName">Full Name</label>
+                        <input type="text" id="signupName" placeholder="John Doe" required>
+                        <small class="error-message" id="signupNameError"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupEmail">Email</label>
+                        <input type="email" id="signupEmail" placeholder="your@email.com" required>
+                        <small class="error-message" id="signupEmailError"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPassword">Password</label>
+                        <input type="password" id="signupPassword" placeholder="••••••••" required>
+                        <small class="error-message" id="signupPasswordError"></small>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupTeam">Team Name</label>
+                        <input type="text" id="signupTeam" placeholder="My Team" required>
+                        <small class="error-message" id="signupTeamError"></small>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Account</button>
+                    <p class="auth-toggle">
+                        Already have an account? 
+                        <a href="#" onclick="toggleAuthForm(); return false;">Sign in</a>
+                    </p>
+                </form>
+
+                <div class="demo-notice">
+                    <small>Demo Credentials: demo@email.com / password123</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Screen -->
+    <div id="appScreen" class="screen" style="display: none;">
+        <nav class="navbar">
+            <div class="navbar-content">
+                <div class="navbar-brand">
+                    <h2>CollabTask</h2>
+                </div>
+                <div class="navbar-menu">
+                    <span class="user-name" id="currentUserName">User</span>
+                    <div class="navbar-divider"></div>
+                    <button class="btn-logout" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </nav>
+
+        <div class="app-container">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <h3>Team</h3>
+                    <div class="team-info">
+                        <div class="team-name" id="teamName">Team</div>
+                        <div class="member-count" id="memberCount">1 member</div>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>Team Members</h3>
+                    <div id="teamMembersList" class="members-list"></div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="invite-container">
+                        <input 
+                            type="email" 
+                            id="inviteEmail" 
+                            placeholder="Invite member..."
+                            class="invite-input"
+                        >
+                        <button class="btn btn-small" onclick="inviteMember()">Invite</button>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <!-- Header -->
+                <header class="content-header">
+                    <div class="header-title">
+                        <h1>Tasks</h1>
+                        <p id="headerStats">Overview of team tasks</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openCreateTaskModal()">+ New Task</button>
+                </header>
+
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📋</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="totalTasksStat">0</div>
+                            <div class="stat-label">Total Tasks</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⏳</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="pendingTasksStat">0</div>
+                            <div class="stat-label">Pending</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🚀</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="inProgressTasksStat">0</div>
+                            <div class="stat-label">In Progress</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="completedTasksStat">0</div>
+                            <div class="stat-label">Completed</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter and Sort -->
+                <div class="controls-section">
+                    <div class="filter-controls">
+                        <button class="filter-btn active" data-status="all">All</button>
+                        <button class="filter-btn" data-status="pending">Pending</button>
+                        <button class="filter-btn" data-status="in_progress">In Progress</button>
+                        <button class="filter-btn" data-status="completed">Completed</button>
+                    </div>
+
+                    <div class="sort-controls">
+                        <label>Sort by:</label>
+                        <select id="sortBy" class="sort-select">
+                            <option value="dueDate">Due Date</option>
+                            <option value="assignee">Assignee</option>
+                            <option value="createdDate">Recently Created</option>
+                        </select>
+
+                        <label>Filter by:</label>
+                        <select id="filterBy" class="filter-select">
+                            <option value="all">All Members</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Tasks List -->
+                <div id="tasksContainer" class="tasks-container">
+                    <div class="empty-state">
+                        <p>📝 No tasks yet. Create one to start!</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Create/Edit Task Modal -->
+    <div id="taskModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeTaskModal()">&times;</span>
+            <h2 id="modalTitle">Create New Task</h2>
+            
+            <form id="taskForm">
+                <input type="hidden" id="taskId">
+                
+                <div class="form-group">
+                    <label for="taskTitle">Task Title *</label>
+                    <input type="text" id="taskTitle" placeholder="What needs to be done?" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="taskDescription">Description</label>
+                    <textarea id="taskDescription" placeholder="Add details..." rows="3"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="taskAssignee">Assign To *</label>
+                        <select id="taskAssignee" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskDueDate">Due Date *</label>
+                        <input type="date" id="taskDueDate" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="taskStatus">Status *</label>
+                        <select id="taskStatus" required>
+                            <option value="pending">Pending</option>
+                            <option value="in_progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskPriority">Priority *</label>
+                        <select id="taskPriority" required>
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-buttons">
+                    <button type="submit" class="btn btn-primary">Save Task</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeTaskModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Task Modal -->
+    <div id="viewTaskModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeViewTaskModal()">&times;</span>
+            <div id="taskDetails"></div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
